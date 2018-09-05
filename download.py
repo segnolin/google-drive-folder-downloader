@@ -25,7 +25,7 @@ def main():
     folder_name = sys.argv[1]
     folder_id = ''
     location = ''
-    if (len(sys.argv)) > 2:
+    if len(sys.argv) > 2:
         location = unicode(sys.argv[2], 'utf-8')
     try:
         folder = service.files().list(
@@ -59,9 +59,9 @@ def download_folder(service, folder_id, location, folder_name):
         filename = item[u'name']
         mime_type = item[u'mimeType']
         print file_id, filename, mime_type, '({}/{})'.format(current, total)
-        if (mime_type == 'application/vnd.google-apps.folder'):
+        if mime_type == 'application/vnd.google-apps.folder':
             download_folder(service, file_id, location, filename)
-        else:
+        elif not os.path.isfile(location + filename):
             download_file(service, file_id, location, filename)
         current += 1
 
