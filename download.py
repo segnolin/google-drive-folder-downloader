@@ -69,7 +69,7 @@ def download_file(service, file_id, location, filename):
 
     request = service.files().get_media(fileId=file_id)
     fh = io.FileIO(location + filename, 'wb')
-    downloader = MediaIoBaseDownload(fh, request)
+    downloader = MediaIoBaseDownload(fh, request, 1024 * 1024 * 1024)
     done = False
     while done is False:
         status, done = downloader.next_chunk()
