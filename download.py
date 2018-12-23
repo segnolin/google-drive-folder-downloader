@@ -27,6 +27,8 @@ def main():
     location = ''
     if len(sys.argv) > 2:
         location = unicode(sys.argv[2], 'utf-8')
+        if location[-1] != '/':
+            location += '/'
     try:
         folder = service.files().list(
                 q="name='{}' and mimeType='application/vnd.google-apps.folder'".format(folder_name),
