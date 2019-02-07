@@ -1,3 +1,2 @@
-credentials.json
-token.json
+*.json
 *.swp
