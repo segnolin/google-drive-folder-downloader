@@ -49,6 +49,7 @@ def download_folder(service, folder_id, location, folder_name):
 
     result = []
     files = service.files().list(
+            pageSize='1000',
             q="'{}' in parents".format(folder_id),
             fields='files(id, name, mimeType)').execute()
     result.extend(files['files'])
