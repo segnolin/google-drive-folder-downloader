@@ -6,7 +6,7 @@ import os
 import pickle
 import sys
 
-SCOPES = 'https://www.googleapis.com/auth/drive.readonly'
+SCOPES = ['https://www.googleapis.com/auth/drive.readonly']
 
 def main():
 
