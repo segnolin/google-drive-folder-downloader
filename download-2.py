@@ -1,26 +1,29 @@
 # -*- coding: utf-8 -*-
-from apiclient import errors
-from apiclient.http import MediaIoBaseDownload
+from googleapiclient.http import MediaIoBaseDownload
 from googleapiclient.discovery import build
-from httplib2 import Http
-from oauth2client import file, client, tools
+from google_auth_oauthlib.flow import InstalledAppFlow
 import io
 import os
+import pickle
 import sys
 
-# If modifying these scopes, delete the file token.json.
-SCOPES = 'https://www.googleapis.com/auth/drive.readonly'
+SCOPES = ['https://www.googleapis.com/auth/drive.readonly']
 
 def main():
-    """
-    Download folder content from google dirve without zipping.
-    """
-    store = file.Storage('token.json')
-    creds = store.get()
-    if not creds or creds.invalid:
-        flow = client.flow_from_clientsecrets('credentials.json', SCOPES)
-        creds = tools.run_flow(flow, store)
-    service = build('drive', 'v3', http=creds.authorize(Http()))
+
+    creds = None
+    if os.path.exists('token.pickle'):
+        with open('token.pickle', 'rb') as token:
+            creds = pickle.load(token)
+    if not creds or not creds.valid:
+        if creds and creds.expired and creds.refresh_token:
+            creds.refresh(Request())
+        else:
+            flow = InstalledAppFlow.from_client_secrets_file('credentials.json', SCOPES)
+            creds = flow.run_local_server(port=1337)
+        with open('token.pickle', 'wb') as token:
+            pickle.dump(creds, token)
+    service = build('drive', 'v3', credentials=creds)
 
     folder_name = sys.argv[1]
     folder_id = ''
@@ -29,17 +32,13 @@ def main():
         location = unicode(sys.argv[2], 'utf-8')
         if location[-1] != '/':
             location += '/'
-    try:
-        folder = service.files().list(
-                q="name='{}' and mimeType='application/vnd.google-apps.folder'".format(folder_name),
-                fields='files(id)').execute()
-        folder_id = folder['files'][0][u'id']
-        print folder_id
-        folder_name = unicode(folder_name, 'utf-8')
-        download_folder(service, folder_id, location, folder_name)
 
-    except errors.HttpError, error:
-        print 'An error occurred: {}'.format(error)
+    folder = service.files().list(
+            q="name='{}' and mimeType='application/vnd.google-apps.folder'".format(folder_name),
+            fields='files(id)').execute()
+    folder_id = folder['files'][0][u'id']
+    print folder_id
+    download_folder(service, folder_id, location, unicode(folder_name, 'utf-8'))
 
 def download_folder(service, folder_id, location, folder_name):
 
