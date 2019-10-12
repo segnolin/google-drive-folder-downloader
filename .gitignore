@@ -1,2 +1,4 @@
 *.json
+*.pickle
 *.swp
+.DS_Store
