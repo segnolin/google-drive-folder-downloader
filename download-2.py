@@ -48,7 +48,7 @@ def main():
         if 0 <= choice and choice < total:
             folder_id = folder['files'][choice]['id']
         else:
-            exit(1)
+            sys.exit(1)
     else:
         folder_id = folder['files'][0]['id']
 
@@ -103,6 +103,7 @@ def download_file(service, file_id, location, filename):
         except:
             fh.close()
             os.remove(location + filename)
+            sys.exit(1)
         print '\rDownload {}%.'.format(int(status.progress() * 100)),
         sys.stdout.flush()
     print ''
