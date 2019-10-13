@@ -43,23 +43,17 @@ def main():
         prompt = 'Please select the folder you want to download:\n\n'
         for i in range(total):
             prompt += u'[{}]: {}\n'.format(i, get_full_path(service, folder['files'][i]))
-        prompt += '[{}]: All of above\n'.format(total)
         print prompt
         choice = int(raw_input('Your choice: '))
-        if choice == total:
-            for i in range(total):
-                folder_id = folder['files'][i]['id']
-                print('{} {}'.format(folder_id, folder_name))
-                download_folder(service, folder_id, location, unicode(folder_name, 'utf-8'))
-                print('')
-        elif choice < total:
+        if 0 <= choice and choice < total:
             folder_id = folder['files'][choice]['id']
-            print('{} {}'.format(folder_id, folder_name))
-            download_folder(service, folder_id, location, unicode(folder_name, 'utf-8'))
+        else:
+            exit(1)
     else:
         folder_id = folder['files'][0]['id']
-        print('{} {}'.format(folder_id, folder_name))
-        download_folder(service, folder_id, location, unicode(folder_name, 'utf-8'))
+
+    print('{} {}'.format(folder_id, folder_name))
+    download_folder(service, folder_id, location, unicode(folder_name, 'utf-8'))
 
 def get_full_path(service, folder):
 
