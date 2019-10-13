@@ -74,7 +74,7 @@ def download_file(service, file_id, location, filename):
     done = False
     while done is False:
         status, done = downloader.next_chunk()
-        print(f'\rDownload {int(status.progress() * 100)}%.', end=' ')
+        print(f'\rDownload {int(status.progress() * 100)}%.', end='')
         sys.stdout.flush()
     print('')
 
