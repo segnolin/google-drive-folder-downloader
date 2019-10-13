@@ -102,7 +102,11 @@ def download_file(service, file_id, location, filename):
     downloader = MediaIoBaseDownload(fh, request, 1024 * 1024 * 1024)
     done = False
     while done is False:
-        status, done = downloader.next_chunk()
+        try:
+            status, done = downloader.next_chunk()
+        except:
+            fh.close()
+            os.remove(location + filename)
         print(f'\rDownload {int(status.progress() * 100)}%.', end='')
         sys.stdout.flush()
     print('')
