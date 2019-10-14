@@ -56,9 +56,11 @@ def main():
 
 def get_full_path(service, folder):
 
+    if not 'parents' in folder:
+        return folder['name']
     files = service.files().get(fileId=folder['parents'][0], fields='id, name, parents').execute()
     path = files['name'] + ' > ' + folder['name']
-    while files['name'] != 'My Drive':
+    while 'parents' in files:
         files = service.files().get(fileId=files['parents'][0], fields='id, name, parents').execute()
         path = files['name'] + ' > ' + path
     return path
