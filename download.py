@@ -40,6 +40,8 @@ def main():
     total = len(folder['files'])
     if total != 1:
         print(f'{total} folders found')
+        if total == 0:
+            sys.exit(1)
         prompt = 'Please select the folder you want to download:\n\n'
         for i in range(total):
             prompt += f'[{i}]: {get_full_path(service, folder["files"][i])}\n'
