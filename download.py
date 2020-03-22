@@ -75,11 +75,21 @@ def download_folder(service, folder_id, location, folder_name):
     location += folder_name + '/'
 
     result = []
-    files = service.files().list(
-            pageSize='1000',
-            q=f"'{folder_id}' in parents",
-            fields='files(id, name, mimeType)').execute()
-    result.extend(files['files'])
+    page_token = None
+    while True:
+        files = service.files().list(
+                q=f"'{folder_id}' in parents",
+                fields='nextPageToken, files(id, name, mimeType)',
+                pageToken=page_token,
+                pageSize=1000).execute()
+
+        result.extend(files['files'])
+
+        page_token = files.get("nextPageToken")
+
+        if not page_token:
+          break
+
     result = sorted(result, key=lambda k: k['name'])
 
     total = len(result)
