@@ -25,7 +25,7 @@ def main():
             pickle.dump(creds, token, protocol=0)
     service = build('drive', 'v3', credentials=creds)
 
-    folder_name = sys.argv[1]
+    folder_name = ''
     folder_id = ''
     location = ''
     if len(sys.argv) > 2:
@@ -34,7 +34,7 @@ def main():
             location += '/'
 
     folder = service.files().list(
-            q=f"name='{folder_name}' and mimeType='application/vnd.google-apps.folder'",
+            q=f"name contains '{sys.argv[1]}' and mimeType='application/vnd.google-apps.folder'",
             fields='files(id, name, parents)').execute()
 
     total = len(folder['files'])
@@ -49,10 +49,12 @@ def main():
         choice = int(input(prompt))
         if 0 <= choice and choice < total:
             folder_id = folder['files'][choice]['id']
+            folder_name = folder['files'][choice]['name']
         else:
             sys.exit(1)
     else:
         folder_id = folder['files'][0]['id']
+        folder_name = folder['files'][0]['name']
 
     print(f'{folder_id} {folder_name}')
     download_folder(service, folder_id, location, folder_name)
@@ -82,13 +84,10 @@ def download_folder(service, folder_id, location, folder_name):
                 fields='nextPageToken, files(id, name, mimeType)',
                 pageToken=page_token,
                 pageSize=1000).execute()
-
         result.extend(files['files'])
-
         page_token = files.get("nextPageToken")
-
         if not page_token:
-          break
+            break
 
     result = sorted(result, key=lambda k: k['name'])
 
