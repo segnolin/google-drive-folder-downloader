@@ -93,12 +93,17 @@ def download_folder(service, folder_id, location, folder_name):
         if mime_type == 'application/vnd.google-apps.folder':
             download_folder(service, file_id, location, filename)
         elif not os.path.isfile(location + filename):
-            download_file(service, file_id, location, filename)
+            download_file(service, file_id, location, filename, mime_type)
         current += 1
 
-def download_file(service, file_id, location, filename):
+def download_file(service, file_id, location, filename, mime_type):
 
-    request = service.files().get_media(fileId=file_id)
+    if 'vnd.google-apps' in mime_type:
+        request = service.files().export_media(fileId=file_id,
+                mimeType='application/pdf')
+        filename += '.pdf'
+    else:
+        request = service.files().get_media(fileId=file_id)
     fh = io.FileIO(location + filename, 'wb')
     downloader = MediaIoBaseDownload(fh, request, 1024 * 1024 * 1024)
     done = False
