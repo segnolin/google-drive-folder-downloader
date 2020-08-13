@@ -58,7 +58,7 @@ def main():
         folder_name = folder['files'][0]['name']
 
     print('{} {}'.format(folder_id, folder_name))
-    download_folder(service, folder_id, location, unicode(folder_name, 'utf-8'))
+    download_folder(service, folder_id, location, folder_name)
 
 def get_full_path(service, folder):
 
