@@ -81,7 +81,7 @@ def download_folder(service, folder_id, location, folder_name):
     while True:
         files = service.files().list(
                 q=f"'{folder_id}' in parents",
-                fields='nextPageToken, files(id, name, mimeType)',
+                fields='nextPageToken, files(id, name, mimeType, shortcutDetails)',
                 pageToken=page_token,
                 pageSize=1000).execute()
         result.extend(files['files'])
@@ -97,6 +97,10 @@ def download_folder(service, folder_id, location, folder_name):
         file_id = item['id']
         filename = item['name']
         mime_type = item['mimeType']
+        shortcut_details = item.get('shortcutDetails', None)
+        if shortcut_details != None:
+            file_id = shortcut_details['targetId']
+            mime_type = shortcut_details['targetMimeType']
         print(f'{file_id} {filename} {mime_type} ({current}/{total})')
         if mime_type == 'application/vnd.google-apps.folder':
             download_folder(service, file_id, location, filename)
